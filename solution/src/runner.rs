@@ -10,27 +10,27 @@ pub fn run_line(line: &str, tl: &mut TodoList) {
                 eprintln!("Error: {}", e);
             }
         }
+    } else {
+        eprintln!("Error: Failed to parse the command.");
     }
 }
 
 fn run_query(q: Query, tl: &mut TodoList) -> Result<QueryResult, QueryError> {
     match q {
         Query::Add(desc, tags) => {
-            // unimplemented!()
-            let listitem = tl.push(desc, tags);
-            return Ok(QueryResult::Added(listitem));
+            let list_item = tl.push(desc, tags);
+            Ok(QueryResult::Added(list_item))
         }
         Query::Done(idx) => {
-            tl.done_with_index(idx);
-            return Ok(QueryResult::Done);
+            if tl.done_with_index(idx).is_some() {
+                Ok(QueryResult::Done)
+            } else {
+                Err(QueryError("Invalid index".to_string()))
+            }
         }
         Query::Search(params) => {
-            let mut output = Vec::new();
-            let result = tl.search(params);
-            for i in result{
-                output.push(i.clone());
-            }
-            return Ok(QueryResult::Found(output));
+            let results = tl.search(params);
+            Ok(QueryResult::Found(results))
         }
     }
 }

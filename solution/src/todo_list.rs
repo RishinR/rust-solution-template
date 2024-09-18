@@ -103,37 +103,39 @@ impl TodoList {
     }
 
     pub fn push(&mut self, description: Description, tags: Vec<Tag>) -> TodoItem {
-        // unimplemented!();
-        // create the TodoItem
-        let item = TodoItem {index: self.top_index, description: description, tags:tags, done:false};
-        // increement the index by 1
+        let item = TodoItem {
+            index: self.top_index,
+            description,
+            tags,
+            done: false,
+        };
         self.top_index.0 += 1;
-        // add the item into the list
         self.items.push(item.clone());
-        return item;
+        item
     }
 
     pub fn done_with_index(&mut self, idx: Index) -> Option<Index> {
-        // unimplemented!();
-        // iteate through all the values in the vector
-        for i in &mut self.items{
-            if i.index == idx{
+        for i in &mut self.items {
+            if i.index == idx {
                 i.done = true;
                 return Some(idx);
             }
         }
-        return None;
+        None
     }
 
     pub fn search(&self, sp: SearchParams) -> Vec<&TodoItem> {
         let mut results = Vec::new();
 
-        for i in &self.items{
-            if sp.tags == i.tags && i.done == false{
+        for i in &self.items {
+            let matches_tags = sp.tags.iter().all(|tag| i.tags.contains(tag));
+            let matches_words = sp.words.iter().all(|word| i.description.value().contains(&word.0));
+
+            if matches_tags && matches_words && !i.done {
                 results.push(i);
             }
         }
 
-        return results;
+        results
     }
 }
