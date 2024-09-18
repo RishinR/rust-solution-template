@@ -84,7 +84,8 @@ impl TodoItem {
 
 impl fmt::Display for TodoItem {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}: {}, {:?}", self.index, self.description, self.tags)
+        let tag_list: Vec<String> = self.tags.iter().map(|t| format!("#{}", t.value())).collect();
+        write!(f, "{} \"{}\" {}", self.index, self.description, tag_list.join(" "))
     }
 }
 
@@ -128,10 +129,12 @@ impl TodoList {
         let mut results = Vec::new();
 
         for i in &self.items {
-            let matches_tags = sp.tags.iter().all(|tag| i.tags.contains(tag));
+            let matches_tags = sp.tags.iter().all(|search_tag| {
+                i.tags.iter().any(|item_tag| item_tag.value().contains(&search_tag.0))
+            });
             let matches_words = sp.words.iter().all(|word| i.description.value().contains(&word.0));
 
-            if matches_tags && matches_words && !i.done {
+            if (matches_tags || matches_words) && !i.done {
                 results.push(i);
             }
         }
