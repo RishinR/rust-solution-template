@@ -127,18 +127,23 @@ impl TodoList {
 
     pub fn search(&self, sp: SearchParams) -> Vec<&TodoItem> {
         let mut results = Vec::new();
-
+    
         for i in &self.items {
-            let matches_tags = sp.tags.iter().all(|search_tag| {
-                i.tags.iter().any(|item_tag| item_tag.value().contains(&search_tag.0))
+            let matches_tags = sp.tags.iter().any(|tag| {
+                i.tags.iter().any(|item_tag| item_tag.value().contains(&tag.value()))
             });
-            let matches_words = sp.words.iter().all(|word| i.description.value().contains(&word.0));
-
-            if (matches_tags || matches_words) && !i.done {
+    
+            let matches_words = sp.words.iter().any(|word| {
+                i.description.value().contains(&word.0)
+            });
+    
+            // Only include items if there is a match in either tags or description
+            if (matches_tags && matches_words) && !i.done {
                 results.push(i);
             }
         }
-
+    
         results
     }
+    
 }

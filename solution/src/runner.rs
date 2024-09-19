@@ -1,14 +1,21 @@
 use crate::*;
 
 pub fn run_line(line: &str, tl: &mut TodoList) {
-    if let Ok((_, q)) = parser::query(line) {
-        match run_query(q, tl) {
-            Ok(r) => {
-                println!("{}", r);
+    match parser::query(line) {
+        Ok((_, q)) => {
+            match run_query(q, tl) {
+                Ok(r) => {
+                    println!("{}", r);
+                }
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                }
             }
-            Err(e) => {
-                eprintln!("Error: {}", e);
-            }
+        }
+        Err(_) => {
+            // If there's an error while parsing the query, return a QueryError with a message.
+            let error = QueryError("Invalid query format or content".to_string());
+            eprintln!("{}", error);
         }
     }
 }
