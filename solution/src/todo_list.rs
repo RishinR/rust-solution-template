@@ -138,7 +138,7 @@ impl TodoList {
             });
     
             // Only include items if there is a match in either tags or description
-            if (matches_tags && matches_words) && !i.done {
+            if (matches_tags || matches_words) && !i.done {
                 results.push(i);
             }
         }
