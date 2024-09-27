@@ -127,7 +127,12 @@ impl TodoList {
 
     pub fn search(&self, sp: SearchParams) -> Vec<&TodoItem> {
         let mut results = Vec::new();
-    
+        // invalidating anyother input
+        if sp.words.is_empty() && sp.tags.is_empty() {
+            eprintln!("Search parameters are empty. Please provide at least one word or tag.");
+            return results;
+        }
+
         for i in &self.items {
             let matches_tags = if !sp.tags.is_empty() {
                 sp.tags.iter().any(|tag| {
