@@ -129,21 +129,29 @@ impl TodoList {
         let mut results = Vec::new();
     
         for i in &self.items {
-            let matches_tags = sp.tags.iter().any(|tag| {
-                i.tags.iter().any(|item_tag| item_tag.value().contains(&tag.value()))
-            });
+            let matches_tags = if !sp.tags.is_empty() {
+                sp.tags.iter().any(|tag| {
+                    i.tags.iter().any(|item_tag| item_tag.value().contains(&tag.value()))
+                })
+            } else {
+                true
+            };
     
-            let matches_words = sp.words.iter().any(|word| {
-                i.description.value().contains(&word.0)
-            });
+            let matches_words = if !sp.words.is_empty() {
+                sp.words.iter().any(|word| {
+                    i.description.value().contains(&word.0)
+                })
+            } else {
+                true
+            };
     
-            // Only include items if there is a match in either tags or description
-            if (matches_tags || matches_words) && !i.done {
+            // Only include items if the match satisfies both conditions (tags and words) when provided
+            if matches_tags && matches_words && !i.done {
                 results.push(i);
             }
         }
     
         results
-    }
+    }    
     
 }
